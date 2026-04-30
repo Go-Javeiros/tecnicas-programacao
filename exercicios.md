@@ -1,15 +1,17 @@
-# Exercícios — Programação Funcional em Java
+# Exercícios — Streams em Java
 
 ---
 
-### Exercício 1 — Filtrando com Predicate
+### Exercício 1 — Filtrar e contar
 
-Dada a classe `Produto` e a lista abaixo, implemente o método `filtrar()` usando `Predicate<Produto>` e chame-o com um lambda que selecione apenas os produtos com preço acima de R$ 50,00.
+Dada a classe `Produto` e a lista abaixo, use a API de Streams para:
+
+a) Filtrar apenas os produtos com preço acima de R$ 100,00 e **imprimir** cada um.
+b) Contar quantos produtos custam mais de R$ 100,00 e imprimir o resultado.
 
 ```java
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class Produto {
     private String nome;
@@ -25,21 +27,21 @@ public class Produto {
     public String toString() { return nome + " (R$ " + preco + ")"; }
 }
 
-public class Ex1Predicate {
+public class Ex1FiltrarContar {
 
     public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
+        var produtos = List.of(
+            new Produto("Caneta",   3.50),
+            new Produto("Mochila",  120.00),
+            new Produto("Caderno",  45.00),
+            new Produto("Notebook", 3200.00),
+            new Produto("Régua",    8.00),
+            new Produto("Tablet",   850.00)
+        );
 
-        // TODO: chamar filtrar() com um lambda que filtre produtos acima de R$ 50,00
-    }
+        // a) TODO: usar stream().filter().forEach() para imprimir os produtos acima de R$ 100
 
-    private static void filtrar(List<Produto> lista, Predicate<Produto> criterio) {
-        // TODO: percorrer a lista e imprimir os produtos onde criterio.test() retornar true
+        // b) TODO: usar stream().filter().count() para contar e imprimir o total
     }
 }
 ```
@@ -48,115 +50,122 @@ public class Ex1Predicate {
 ```
 Mochila (R$ 120.0)
 Notebook (R$ 3200.0)
+Tablet (R$ 850.0)
+Total acima de R$ 100: 3
 ```
 
 ---
 
-### Exercício 2 — Consumindo com Consumer
+### Exercício 2 — Transformar e coletar
 
-Usando a mesma classe `Produto` e lista do exercício anterior, crie um `Consumer<Produto>` com lambda que imprima cada produto no formato abaixo, e aplique-o com `forEach`.
-
-```java
-import java.util.function.Consumer;
-
-public class Ex2Consumer {
-
-    public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
-
-        // TODO: criar um Consumer<Produto> com lambda que imprima no formato abaixo
-        // TODO: usar produtos.forEach() passando o consumer
-    }
-}
-```
-
-**Formato de saída esperado:**
-```
-Produto: Caneta | Preço: R$ 3,50
-Produto: Mochila | Preço: R$ 120,00
-...
-```
-
-> Dica: `String.format("Produto: %s | Preço: R$ %.2f", ...)` pode ajudar.
-
----
-
-### Exercício 3 — Ordenando com Comparator
-
-Crie dois `Comparator<Produto>` com lambdas para ordenar a lista de produtos:
-1. Por preço crescente
-2. Por nome em ordem alfabética
-
-Para cada ordenação, imprima a lista resultante.
+Usando a mesma lista de `Produto`, extraia apenas os **nomes** dos produtos, ordene-os em ordem alfabética e colete o resultado em uma `List<String>`. Imprima a lista final.
 
 ```java
-import java.util.Comparator;
-
-public class Ex3Comparator {
+public class Ex2MapSorted {
 
     public static void main(String[] args) {
-        List<Produto> produtos = new ArrayList<>();
-        produtos.add(new Produto("Caneta",   3.50));
-        produtos.add(new Produto("Mochila",  120.00));
-        produtos.add(new Produto("Caderno",  45.00));
-        produtos.add(new Produto("Notebook", 3200.00));
-        produtos.add(new Produto("Régua",    8.00));
-
-        // TODO: criar Comparator por preço crescente e ordenar a lista
-        // TODO: imprimir a lista ordenada por preço
-
-        // TODO: criar Comparator por nome alfabético e ordenar a lista
-        // TODO: imprimir a lista ordenada por nome
-    }
-}
-```
-
-> Dica: use `Double.compare(a, b)` para comparar `double` com segurança.
-
----
-
-### Exercício 4 — removeIf e Supplier
-
-Dada a lista de números abaixo:
-
-a) Use `removeIf` com lambda para remover todos os números ímpares da lista.
-
-b) Crie um `Supplier<List<Integer>>` que forneça uma nova lista contendo apenas os números pares de 1 a 10, sem usar `removeIf`.
-
-c) Imprima as duas listas e verifique se são iguais.
-
-```java
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Supplier;
-
-public class Ex4RemoveIfSupplier {
-
-    public static void main(String[] args) {
-        List<Integer> numeros = new ArrayList<>(
-            Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+        var produtos = List.of(
+            new Produto("Caneta",   3.50),
+            new Produto("Mochila",  120.00),
+            new Produto("Caderno",  45.00),
+            new Produto("Notebook", 3200.00),
+            new Produto("Régua",    8.00),
+            new Produto("Tablet",   850.00)
         );
 
-        // a) TODO: usar removeIf com lambda para remover os ímpares
-        System.out.println("removeIf: " + numeros);
+        // TODO: usar stream().map().sorted().collect() para obter a lista de nomes ordenada
+        List<String> nomes = null; // substituir pelo pipeline
 
-        // b) TODO: criar Supplier<List<Integer>> que retorne lista só com pares de 1 a 10
-        Supplier<List<Integer>> pares = null; // substituir pelo lambda
-
-        // c) TODO: chamar pares.get(), imprimir e comparar com numeros usando .equals()
+        System.out.println(nomes);
     }
 }
 ```
 
 **Saída esperada:**
 ```
-removeIf: [2, 4, 6, 8, 10]
-Supplier: [2, 4, 6, 8, 10]
-Iguais: true
+[Caderno, Caneta, Mochila, Notebook, Régua, Tablet]
+```
+
+---
+
+### Exercício 3 — Estatísticas com streams de primitivos
+
+Usando a mesma lista de `Produto`, calcule:
+
+a) A **média de preços** de todos os produtos.
+b) O **produto mais barato** (use `min()` com `Comparator`).
+
+```java
+import java.util.Comparator;
+import java.util.OptionalDouble;
+
+public class Ex3Estatisticas {
+
+    public static void main(String[] args) {
+        var produtos = List.of(
+            new Produto("Caneta",   3.50),
+            new Produto("Mochila",  120.00),
+            new Produto("Caderno",  45.00),
+            new Produto("Notebook", 3200.00),
+            new Produto("Régua",    8.00),
+            new Produto("Tablet",   850.00)
+        );
+
+        // a) TODO: usar stream().mapToDouble().average() para calcular a média
+        //    Imprimir no formato: "Média de preços: R$ XX.XX"
+
+        // b) TODO: usar stream().min(Comparator) para encontrar o mais barato
+        //    Imprimir no formato: "Mais barato: NomeProduto (R$ XX.XX)"
+    }
+}
+```
+
+**Saída esperada:**
+```
+Média de preços: R$ 704,42
+Mais barato: Caneta (R$ 3.5)
+```
+
+> Dica: `mapToDouble(Produto::getPreco)` converte a stream em uma `DoubleStream`.
+
+---
+
+### Exercício 4 — Agrupando com Collectors
+
+Usando a mesma lista de `Produto`, agrupe os produtos em duas categorias usando `partitioningBy()`:
+- `true` → produtos com preço **≤ R$ 50,00** (baratos)
+- `false` → produtos com preço **> R$ 50,00** (caros)
+
+Imprima os dois grupos.
+
+```java
+import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Ex4Agrupamento {
+
+    public static void main(String[] args) {
+        var produtos = List.of(
+            new Produto("Caneta",   3.50),
+            new Produto("Mochila",  120.00),
+            new Produto("Caderno",  45.00),
+            new Produto("Notebook", 3200.00),
+            new Produto("Régua",    8.00),
+            new Produto("Tablet",   850.00)
+        );
+
+        // TODO: usar stream().collect(Collectors.partitioningBy(...)) para agrupar
+        Map<Boolean, List<Produto>> grupos = null; // substituir pelo pipeline
+
+        System.out.println("Baratos (≤ R$ 50): " + grupos.get(true));
+        System.out.println("Caros   (> R$ 50): " + grupos.get(false));
+    }
+}
+```
+
+**Saída esperada:**
+```
+Baratos (≤ R$ 50): [Caneta (R$ 3.5), Caderno (R$ 45.0), Régua (R$ 8.0)]
+Caros   (> R$ 50): [Mochila (R$ 120.0), Notebook (R$ 3200.0), Tablet (R$ 850.0)]
 ```

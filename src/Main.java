@@ -36,7 +36,7 @@ public class Main {
        /* Stream<String> stringStream = animais.stream()                      //fonte
                 .filter(Animal::podeSalta) //intermediaria
                 .map(Animal::getNome) //intermediaria
-                .map(s -> s.toUpperCase());//intermediaria*/count
+                .map(s -> s.toUpperCase());//intermediaria*/
 
 
         //TODO Trazer exemplo de paralel stream

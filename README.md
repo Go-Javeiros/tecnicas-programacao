@@ -394,6 +394,8 @@ Livro{id=3, titulo='Memórias Póstumas de Brás Cubas', ano=1881}
 
 ## Critérios de Avaliação
 
+### Código (70%)
+
 | Módulo | Exercício | Peso |
 |--------|-----------|------|
 | 1. Datas | `estaAtrasado()`, `calcularMulta()`, `toString()` | 20% |
@@ -410,6 +412,10 @@ Livro{id=3, titulo='Memórias Póstumas de Brás Cubas', ano=1881}
 - A saída esperada deve aparecer corretamente
 - Os dados devem persistir entre execuções (executar duas vezes não deve duplicar registros)
 
+### Apresentação (30%)
+
+Cada grupo deve preparar e apresentar os slides ao final do projeto. Ver seção **Entregável 2** abaixo.
+
 ---
 
 ## Ordem Sugerida de Implementação
@@ -422,6 +428,59 @@ Implemente nesta ordem para desbloquear as funcionalidades gradualmente:
 ```
 
 Sem os exercícios 5 e 4, nada é salvo/carregado. Sem o exercício 2, nenhum repositório funciona. Os demais dependem de tudo anterior estar funcionando.
+
+---
+
+## Entregável 2 — Apresentação
+
+Além do código, cada grupo deve preparar uma apresentação de **10 a 15 minutos** cobrindo os tópicos abaixo.
+
+### Estrutura dos slides
+
+**1. Introdução (1–2 slides)**
+- Nome do grupo e membros
+- Visão geral do projeto: o que é a Biblioteca Digital e o que o SimploDB faz
+
+**2. Arquitetura e decisões técnicas (2–3 slides)**
+- Como o SimploDB funciona: o caminho de um objeto desde o `salvar()` até o arquivo `.dat`
+- Por que serialização? Quais as vantagens e limitações em relação a um banco de dados real?
+- Qual foi a parte mais interessante da arquitetura para o grupo?
+
+**3. Conceitos aplicados (1 slide por módulo, escolha 3)**
+Escolham 3 dos módulos abaixo e expliquem como o conceito aparece no código de vocês:
+- **Datas:** como `ChronoUnit.DAYS.between()` calcula a multa corretamente
+- **Programação Funcional:** o que é um `Predicate<T>` e por que `buscarComFiltro` é poderoso
+- **Streams:** qual pipeline de stream foi mais difícil de montar e por quê
+- **NIO.2:** diferença entre `Files.list()` e uma leitura tradicional com `File`
+- **IO Streams:** o que acontece internamente quando `ObjectOutputStream.writeObject()` é chamado
+- **Optional:** como `orElseThrow` e `ifPresent` substituem verificações de `null`
+
+**4. Dificuldades e desafios (1–2 slides)**
+- Qual exercício deu mais trabalho? Por quê?
+- Algum erro difícil de depurar? Como resolveram?
+- O que fariam diferente se recomeçassem?
+
+**5. Aprendizados (1 slide)**
+- O que o grupo considera o aprendizado mais importante do projeto
+- Como os conceitos do curso se conectam no mundo real
+
+**6. Demo ao vivo (opcional, mas recomendado)**
+- Executar o `Main.java` ao vivo mostrando os dados sendo salvos e recarregados
+
+### Critérios de avaliação da apresentação
+
+| Critério | Peso |
+|----------|------|
+| Clareza na explicação dos conceitos técnicos | 40% |
+| Profundidade na análise das dificuldades | 25% |
+| Qualidade dos slides (objetividade, organização) | 20% |
+| Participação de todos os membros do grupo | 15% |
+
+### Formato
+
+- **Ferramenta:** livre (Google Slides, PowerPoint, Keynote, Marp, etc.)
+- **Duração:** 10 a 15 minutos + até 5 minutos de perguntas
+- **Entrega dos slides:** commitar o arquivo (PDF ou link) no repositório do grupo antes da apresentação
 
 ---
 

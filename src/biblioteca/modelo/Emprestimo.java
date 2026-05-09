@@ -4,6 +4,7 @@ import simplodb.Persistivel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Emprestimo implements Persistivel {
@@ -140,6 +141,27 @@ public class Emprestimo implements Persistivel {
     @Override
     public String toString() {
         // TODO Exercício 1c
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
+        try{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String resumoEmprestimo =
+                    "\nEmpréstimo # " + id +
+                            " | Livro: " + livroId +
+                            " | Usuário: " + usuarioId +
+                            " | Vence: " + dataDevolucaoPrevista.format(formatter);
+
+            if (isDevolvido()) {
+                resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
+            }
+
+            if (estaAtrasado()) {
+                resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
+            }
+
+            return resumoEmprestimo;
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c" + e);
+        }
+
     }
 }

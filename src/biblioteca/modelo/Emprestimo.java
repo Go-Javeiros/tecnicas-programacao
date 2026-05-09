@@ -99,7 +99,18 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
+        try{
+
+            LocalDateTime  referencia =  isDevolvido() ? getDataDevolvido() : LocalDateTime.now();
+            long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, referencia);
+            return !estaAtrasado()
+                    ? BigDecimal.ZERO
+                    : MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b" + e);
+        }
+
     }
 
     // -------------------------------------------------------------------------

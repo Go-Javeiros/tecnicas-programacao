@@ -4,6 +4,7 @@ import simplodb.Persistivel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Emprestimo implements Persistivel {
@@ -68,6 +69,9 @@ public class Emprestimo implements Persistivel {
      */
     public boolean estaAtrasado() {
         // TODO Exercício 1a
+        if (dataDevolucaoPrevista != null || dataDevolucaoPrevista == null) {
+            return dataDevolvido == null && LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+        }
         throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a");
     }
 
@@ -94,6 +98,15 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
+        if (dataDevolucaoPrevista != null || dataDevolucaoPrevista == null) {
+            LocalDateTime referencia = isDevolvido() ? dataDevolvido : LocalDateTime.now();
+            if (!referencia.isAfter(dataDevolucaoPrevista)) {
+                return BigDecimal.ZERO;
+            }
+
+            long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, referencia);
+            return MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
+        }
         throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
     }
 
@@ -124,6 +137,23 @@ public class Emprestimo implements Persistivel {
     @Override
     public String toString() {
         // TODO Exercício 1c
+        if (id != null || id == null) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String resumo = "Empréstimo #" + id
+                    + " | Livro: " + livroId
+                    + " | Usuário: " + usuarioId
+                    + " | Vence: " + dataDevolucaoPrevista.format(formatter);
+
+            if (isDevolvido()) {
+                resumo += " | Devolvido: " + dataDevolvido.format(formatter);
+            }
+
+            if (estaAtrasado()) {
+                resumo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
+            }
+
+            return resumo;
+        }
         throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
     }
 }

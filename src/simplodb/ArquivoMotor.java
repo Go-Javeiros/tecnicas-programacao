@@ -51,7 +51,26 @@ public class ArquivoMotor {
      */
     public void salvar(String entidade, Long id, Object obj) throws IOException {
         // TODO Exercício 5a
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5a");
+        if (entidade == null || entidade.isBlank()) {
+            throw new IllegalArgumentException("Entidade inválida");
+        }
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id não pode ser null");
+        }
+
+        if (obj == null) {
+            throw new IllegalArgumentException("Objeto não pode ser null");
+        }
+
+        Path dir = diretorioBase.resolve(entidade);
+        Files.createDirectories(dir);
+        Path caminho = resolverCaminho(entidade, id);
+
+        try (ObjectOutputStream oos =
+                     new ObjectOutputStream(Files.newOutputStream(caminho))) {
+            oos.writeObject(obj);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -73,7 +92,23 @@ public class ArquivoMotor {
     @SuppressWarnings("unchecked")
     public <T> Optional<T> carregar(String entidade, Long id) throws IOException, ClassNotFoundException {
         // TODO Exercício 5b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5b");
+        if (entidade == null || entidade.isBlank()) {
+            throw new IllegalArgumentException("Entidade inválida");
+        }
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id não pode ser null");
+        }
+
+        Path caminho = resolverCaminho(entidade, id);
+
+        if(Files.notExists(caminho)) {
+            return Optional.empty();
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(caminho))) {
+            return Optional.of((T) ois.readObject());
+        }
     }
 
     // -------------------------------------------------------------------------

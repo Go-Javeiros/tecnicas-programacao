@@ -105,7 +105,7 @@ public class Emprestimo implements Persistivel {
                 : LocalDateTime.now();
         try{
 
-            if (!dataReferencia.isAfter(dataDevolucaoPrevista)) {
+            if (!estaAtrasado() && !dataReferencia.isAfter(dataDevolucaoPrevista)) {
                 return BigDecimal.ZERO;
             }
 
@@ -152,7 +152,7 @@ public class Emprestimo implements Persistivel {
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String resumoEmprestimo =
-                    "\nEmpréstimo # " + id +
+                    "\nEmpréstimo #" + id +
                             " | Livro: " + livroId +
                             " | Usuário: " + usuarioId +
                             " | Vence: " + dataDevolucaoPrevista.format(formatter);

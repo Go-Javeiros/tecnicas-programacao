@@ -100,13 +100,12 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
+        LocalDateTime dataReferencia = isDevolvido()
+                ? getDataDevolvido()
+                : LocalDateTime.now();
         try{
 
-            LocalDateTime dataReferencia = isDevolvido()
-                    ? dataDevolvido
-                    : LocalDateTime.now();
-
-            if ( (!dataDevolvido.isAfter(dataDevolucaoPrevista)) || (!LocalDateTime.now().isAfter(dataDevolucaoPrevista))) {
+            if (!dataReferencia.isAfter(dataDevolucaoPrevista)) {
                 return BigDecimal.ZERO;
             }
 

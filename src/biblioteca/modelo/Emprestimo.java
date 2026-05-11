@@ -152,7 +152,7 @@ public class Emprestimo implements Persistivel {
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String resumoEmprestimo =
-                    "  Empréstimo #" + id +
+                    " Empréstimo #" + id +
                             " | Livro: " + livroId +
                             " | Usuário: " + usuarioId +
                             " | Vence: " + dataDevolucaoPrevista.format(formatter);

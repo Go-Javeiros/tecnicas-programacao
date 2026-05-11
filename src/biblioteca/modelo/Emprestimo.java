@@ -106,7 +106,7 @@ public class Emprestimo implements Persistivel {
                     ? getDataDevolvido()
                     : LocalDateTime.now();
 
-            if ( (!dataDevolvido.isAfter(dataDevolucaoPrevista)) || (!LocalDateTime.now().isAfter(dataDevolucaoPrevista))) {
+            if ( (!getDataDevolvido().isAfter(dataDevolucaoPrevista)) || (!LocalDateTime.now().isAfter(dataDevolucaoPrevista))) {
                 return BigDecimal.ZERO;
             }
 

@@ -149,9 +149,6 @@ public class Emprestimo implements Persistivel {
     @Override
     public String toString() {
         // TODO Exercício 1c
-        LocalDateTime dataReferencia = isDevolvido()
-                ? getDataDevolvido()
-                : LocalDateTime.now();
         try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String resumoEmprestimo =
@@ -164,7 +161,7 @@ public class Emprestimo implements Persistivel {
                 resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
             }
 
-            if (estaAtrasado() && dataReferencia.isAfter(dataDevolucaoPrevista)) {
+            if (estaAtrasado()) {
                 resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
             }
 

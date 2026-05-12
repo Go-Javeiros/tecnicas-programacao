@@ -161,7 +161,7 @@ public class Emprestimo implements Persistivel {
                 resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
             }
 
-            if (estaAtrasado()) {
+            if (dataDevolvido == null && LocalDateTime.now().isAfter(dataDevolucaoPrevista)) {
                 resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
             }
 

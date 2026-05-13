@@ -69,10 +69,12 @@ public class Emprestimo implements Persistivel {
      */
     public boolean estaAtrasado() {
         // TODO Exercício 1a
+        boolean dataReferencia = isDevolvido()
+                ? dataDevolvido.isAfter(dataDevolucaoPrevista)
+                : LocalDateTime.now().isAfter(dataDevolucaoPrevista);
         try{
             return dataDevolvido == null
-                    && LocalDateTime.now().isAfter(dataDevolucaoPrevista)
-                    && getDataDevolvido().isAfter(dataDevolucaoPrevista);
+             && dataReferencia;
         }catch (UnsupportedOperationException e) {
             throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a" + e);
         }

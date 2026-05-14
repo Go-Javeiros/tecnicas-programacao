@@ -283,47 +283,76 @@ Filtre os empréstimos atrasados e some as multas por usuário usando `Collector
 #### Resposta ajustada — 3c e 3d
 
 ```java
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+// -------------------------------------------------------------------------
+// Exercício 3c — Streams (Módulo 3)
+// -------------------------------------------------------------------------
 
-public class RelatorioServico {
+/**
+ * Retorna os 5 livros mais emprestados de todos os tempos.
+ *
+ * Passos:
+ *   1. emprestimoRepo.buscarTodos().stream()
+ *   2. .collect(Collectors.groupingBy(Emprestimo::getLivroId, Collectors.counting()))
+ *      → produz Map<Long, Long>: livroId → quantidade de empréstimos
+ *   3. .entrySet().stream()
+ *   4. .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+ *   5. .limit(5)
+ *   6. .map(entry -> livroRepo.buscarPorId(entry.getKey()))
+ *   7. .filter(Optional::isPresent).map(Optional::get)
+ *   8. .collect(Collectors.toList())
+ *
+ * @return lista de até 5 livros, do mais para o menos emprestado
+ */
+public List<Livro> top5LivrosMaisEmprestados() {
+    return emprestimoRepo.buscarTodos().stream()
+        .collect(Collectors.groupingBy(
+            Emprestimo::getLivroId,
+            Collectors.counting()
+        ))
+        .entrySet().stream()
+        .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+        .limit(5)
+        .map(entry -> livroRepo.buscarPorId(entry.getKey()))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
+}
 
-    // 3c) Top 5 livros mais emprestados
-    public List<Livro> top5LivrosMaisEmprestados(List<Emprestimo> emprestimos) {
-        return emprestimos.stream()
-                .collect(Collectors.groupingBy(
-                        Emprestimo::getLivro,
-                        Collectors.counting()
-                ))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.<Livro, Long>comparingByValue(Comparator.reverseOrder()))
-                .limit(5)
-                .map(Map.Entry::getKey)
-                .collect(Collectors.toList());
-    }
+// -------------------------------------------------------------------------
+// Exercício 3d — Streams (Módulo 3)
+// -------------------------------------------------------------------------
 
-    // 3d) Multas pendentes por usuário
-    public Map<Usuario, BigDecimal> multasPendentesPorUsuario(List<Emprestimo> emprestimos) {
-        return emprestimos.stream()
-                .filter(Emprestimo::isAtrasado)
-                .collect(Collectors.toMap(
-                        Emprestimo::getUsuario,
-                        Emprestimo::getMulta,
-                        BigDecimal::add
-                ));
-    }
+/**
+ * Retorna o total de multas pendentes agrupado por usuário.
+ * Considera apenas empréstimos atrasados.
+ *
+ * Passos:
+ *   1. emprestimoRepo.buscarTodos().stream()
+ *   2. .filter(Emprestimo::estaAtrasado)
+ *   3. .collect(Collectors.toMap(
+ *          Emprestimo::getUsuarioId,
+ *          Emprestimo::calcularMulta,
+ *          BigDecimal::add
+ *      ))
+ *
+ * @return Map<Long, BigDecimal> de usuarioId → soma das multas
+ */
+public Map<Long, BigDecimal> multasPendentesPorUsuario() {
+    return emprestimoRepo.buscarTodos().stream()
+        .filter(Emprestimo::estaAtrasado)
+        .collect(Collectors.toMap(
+            Emprestimo::getUsuarioId,
+            Emprestimo::calcularMulta,
+            BigDecimal::add
+        ));
 }
 ```
 
-Explicação curta para falar:
+O código está correto e já está no padrão que o professor costuma gostar:
 
-3c: conta quantas vezes cada livro foi emprestado, ordena do mais emprestado para o menos e retorna os 5 primeiros.
-
-3d: filtra somente os empréstimos atrasados e soma o valor das multas de cada usuário usando BigDecimal::add.
+- stream bem organizado
+- comentários explicando a pipeline
+- uso correto de `groupingBy`, `counting`, `toMap` e `BigDecimal::add`
 
 ---
 

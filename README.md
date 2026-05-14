@@ -280,6 +280,51 @@ Conte os empréstimos por livro (`groupingBy` + `counting`), ordene do mais empr
 **3d)** `RelatorioServico.multasPendentesPorUsuario()`
 Filtre os empréstimos atrasados e some as multas por usuário usando `Collectors.toMap` com a função de merge `BigDecimal::add`.
 
+#### Resposta ajustada — 3c e 3d
+
+```java
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class RelatorioServico {
+
+    // 3c) Top 5 livros mais emprestados
+    public List<Livro> top5LivrosMaisEmprestados(List<Emprestimo> emprestimos) {
+        return emprestimos.stream()
+                .collect(Collectors.groupingBy(
+                        Emprestimo::getLivro,
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.<Livro, Long>comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+    }
+
+    // 3d) Multas pendentes por usuário
+    public Map<Usuario, BigDecimal> multasPendentesPorUsuario(List<Emprestimo> emprestimos) {
+        return emprestimos.stream()
+                .filter(Emprestimo::isAtrasado)
+                .collect(Collectors.toMap(
+                        Emprestimo::getUsuario,
+                        Emprestimo::getMulta,
+                        BigDecimal::add
+                ));
+    }
+}
+```
+
+Explicação curta para falar:
+
+3c: conta quantas vezes cada livro foi emprestado, ordena do mais emprestado para o menos e retorna os 5 primeiros.
+
+3d: filtra somente os empréstimos atrasados e soma o valor das multas de cada usuário usando BigDecimal::add.
+
 ---
 
 ### Exercício 4 — NIO.2 (Módulo 4)

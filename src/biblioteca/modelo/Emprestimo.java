@@ -69,10 +69,16 @@ public class Emprestimo implements Persistivel {
      */
     public boolean estaAtrasado() {
         // TODO Exercício 1a
-        if (dataDevolucaoPrevista != null || dataDevolucaoPrevista == null) {
-            return dataDevolvido == null && LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+
+        try{
+            boolean dataAtrasado = isDevolvido()
+                    ? dataDevolvido.isAfter(dataDevolucaoPrevista)
+                    : LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+            return dataAtrasado;
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a" + e);
         }
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a");
+
     }
 
     // -------------------------------------------------------------------------
@@ -98,16 +104,26 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
-        if (dataDevolucaoPrevista != null || dataDevolucaoPrevista == null) {
-            LocalDateTime referencia = isDevolvido() ? dataDevolvido : LocalDateTime.now();
-            if (!referencia.isAfter(dataDevolucaoPrevista)) {
+        LocalDateTime dataReferencia = isDevolvido()
+                ? getDataDevolvido()
+                : LocalDateTime.now();
+        try{
+
+            if (!estaAtrasado()) {
                 return BigDecimal.ZERO;
             }
 
-            long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, referencia);
+            long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, dataReferencia);
+
+
             return MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
+
+
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b" + e);
         }
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
+
     }
 
     // -------------------------------------------------------------------------
@@ -137,23 +153,29 @@ public class Emprestimo implements Persistivel {
     @Override
     public String toString() {
         // TODO Exercício 1c
-        if (id != null || id == null) {
+        boolean resultAtrasado = estaAtrasado();
+        boolean resultDevolvido = isDevolvido();
+        try{
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-            String resumo = "Empréstimo #" + id
-                    + " | Livro: " + livroId
-                    + " | Usuário: " + usuarioId
-                    + " | Vence: " + dataDevolucaoPrevista.format(formatter);
+            String resumoEmprestimo =
+                    "Empréstimo #" + id +
+                            " | Livro: " + livroId +
+                            " | Usuário: " + usuarioId +
+                            " | Vence: " + dataDevolucaoPrevista.format(formatter);
 
-            if (isDevolvido()) {
-                resumo += " | Devolvido: " + dataDevolvido.format(formatter);
+            if ( isDevolvido()) {
+                resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
             }
 
             if (estaAtrasado()) {
-                resumo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
+                resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
             }
 
-            return resumo;
+            return resumoEmprestimo;
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c" + e);
         }
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
+
     }
 }

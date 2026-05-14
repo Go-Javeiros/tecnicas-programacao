@@ -71,7 +71,7 @@ public class EmprestimoTest {
         String resumo = emprestimo.toString();
 
         verificar(resumo.startsWith("Empr\u00e9stimo #3 | Livro: 7 | Usu\u00e1rio: 2 | Vence: "), "Resumo deveria conter dados base");
-        verificar(resumo.contains(" | ATRASADO | Multa: R$ 3,00"), "Resumo atrasado deveria conter status e multa");
+        verificar(resumo.contains(" | ATRASADO | Multa: R$ 3.00"), "Resumo atrasado deveria conter status e multa");
     }
 
     private static void deveFormatarResumoDoEmprestimoDevolvido() {

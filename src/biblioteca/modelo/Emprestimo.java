@@ -163,11 +163,11 @@ public class Emprestimo implements Persistivel {
                             " | Usuário: " + usuarioId +
                             " | Vence: " + dataDevolucaoPrevista.format(formatter);
 
-            if (resultDevolvido) {
+            if ( isDevolvido()) {
                 resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
             }
 
-            if (resultAtrasado) {
+            if (estaAtrasado()) {
                 resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
             }
 

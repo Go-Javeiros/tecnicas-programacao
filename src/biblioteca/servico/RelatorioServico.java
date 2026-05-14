@@ -1,19 +1,15 @@
 package biblioteca.servico;
 
-import biblioteca.modelo.Emprestimo;
 import biblioteca.modelo.Livro;
 import biblioteca.repositorio.AutorRepositorio;
 import biblioteca.repositorio.EmprestimoRepositorio;
 import biblioteca.repositorio.LivroRepositorio;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 public class RelatorioServico {
 
@@ -111,8 +107,27 @@ public class RelatorioServico {
      *   6. Retorne new RelatorioCompleto(top5, multas, generos)
      */
     public RelatorioCompleto gerarRelatorioCompleto() {
-        // TODO Exercício 7 ⭐ BÔNUS
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 7 (bônus)");
+        
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        CompletableFuture<List<Livro>> futureTop5 =
+                CompletableFuture.supplyAsync(() -> top5LivrosMaisEmprestados(), executor);
+
+        CompletableFuture<Map<Long, BigDecimal>> futureMultas =
+                CompletableFuture.supplyAsync(() -> multasPendentesPorUsuario(), executor);
+
+        CompletableFuture<Map<String, List<Livro>>> futureGeneros =
+                CompletableFuture.supplyAsync(() -> livroRepo.agruparPorGenero(), executor);
+
+        CompletableFuture.allOf(futureTop5, futureMultas, futureGeneros).join();
+
+        List<Livro> top5 = futureTop5.join();
+        Map<Long, BigDecimal> multas = futureMultas.join();
+        Map<String, List<Livro>> generos = futureGeneros.join();
+
+        executor.shutdown();
+
+        return new RelatorioCompleto(top5, multas, generos);
     }
 
     // -------------------------------------------------------------------------

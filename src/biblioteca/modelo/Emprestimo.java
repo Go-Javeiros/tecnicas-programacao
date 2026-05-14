@@ -4,6 +4,7 @@ import simplodb.Persistivel;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Emprestimo implements Persistivel {
@@ -68,7 +69,16 @@ public class Emprestimo implements Persistivel {
      */
     public boolean estaAtrasado() {
         // TODO Exercício 1a
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a");
+
+        try{
+            boolean dataAtrasado = isDevolvido()
+                    ? dataDevolvido.isAfter(dataDevolucaoPrevista)
+                    : LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+            return dataAtrasado;
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a" + e);
+        }
+
     }
 
     // -------------------------------------------------------------------------
@@ -94,7 +104,26 @@ public class Emprestimo implements Persistivel {
      */
     public BigDecimal calcularMulta() {
         // TODO Exercício 1b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b");
+        LocalDateTime dataReferencia = isDevolvido()
+                ? getDataDevolvido()
+                : LocalDateTime.now();
+        try{
+
+            if (!estaAtrasado()) {
+                return BigDecimal.ZERO;
+            }
+
+            long dias = ChronoUnit.DAYS.between(dataDevolucaoPrevista, dataReferencia);
+
+
+            return MULTA_POR_DIA.multiply(BigDecimal.valueOf(dias));
+
+
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1b" + e);
+        }
+
     }
 
     // -------------------------------------------------------------------------
@@ -124,6 +153,29 @@ public class Emprestimo implements Persistivel {
     @Override
     public String toString() {
         // TODO Exercício 1c
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c");
+        boolean resultAtrasado = estaAtrasado();
+        boolean resultDevolvido = isDevolvido();
+        try{
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String resumoEmprestimo =
+                    "Empréstimo #" + id +
+                            " | Livro: " + livroId +
+                            " | Usuário: " + usuarioId +
+                            " | Vence: " + dataDevolucaoPrevista.format(formatter);
+
+            if ( isDevolvido()) {
+                resumoEmprestimo += " | Devolvido: " + dataDevolvido.format(formatter);
+            }
+
+            if (estaAtrasado()) {
+                resumoEmprestimo += " | ATRASADO | Multa: R$ " + String.format("%.2f", calcularMulta());
+            }
+
+            return resumoEmprestimo;
+
+        }catch (UnsupportedOperationException e) {
+            throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1c" + e);
+        }
+
     }
 }

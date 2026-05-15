@@ -3,6 +3,7 @@ package simplodb;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Motor de persistência do SimploDB.
@@ -51,7 +52,26 @@ public class ArquivoMotor {
      */
     public void salvar(String entidade, Long id, Object obj) throws IOException {
         // TODO Exercício 5a
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5a");
+        if (entidade == null || entidade.isBlank()) {
+            throw new IllegalArgumentException("Entidade inválida");
+        }
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id não pode ser null");
+        }
+
+        if (obj == null) {
+            throw new IllegalArgumentException("Objeto não pode ser null");
+        }
+
+        Path dir = diretorioBase.resolve(entidade);
+        Files.createDirectories(dir);
+        Path caminho = resolverCaminho(entidade, id);
+
+        try (ObjectOutputStream oos =
+                     new ObjectOutputStream(Files.newOutputStream(caminho))) {
+            oos.writeObject(obj);
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -73,7 +93,23 @@ public class ArquivoMotor {
     @SuppressWarnings("unchecked")
     public <T> Optional<T> carregar(String entidade, Long id) throws IOException, ClassNotFoundException {
         // TODO Exercício 5b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 5b");
+        if (entidade == null || entidade.isBlank()) {
+            throw new IllegalArgumentException("Entidade inválida");
+        }
+
+        if (id == null) {
+            throw new IllegalArgumentException("Id não pode ser null");
+        }
+
+        Path caminho = resolverCaminho(entidade, id);
+
+        if(Files.notExists(caminho)) {
+            return Optional.empty();
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(Files.newInputStream(caminho))) {
+            return Optional.of((T) ois.readObject());
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -98,7 +134,47 @@ public class ArquivoMotor {
     @SuppressWarnings("unchecked")
     public <T> List<T> carregarTodos(String entidade) throws IOException, ClassNotFoundException {
         // TODO Exercício 4
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 4");
+        if (entidade == null || entidade.isBlank()) {
+            throw new IllegalArgumentException("Entidade inválida");
+        }
+
+        Path dir = diretorioBase.resolve(entidade);
+
+        if (Files.notExists(dir)) {
+            return List.of();
+        }
+
+        try (Stream<Path> arquivos = Files.list(dir)) {
+
+            return arquivos
+                    .filter(path -> path.getFileName().toString().endsWith(".dat"))
+                    .map(path -> {
+                        String nome = path.getFileName().toString();
+                        Long id = Long.parseLong(nome.substring(0, nome.length() - 4));
+
+                        try {
+                            return carregar(entidade, id);
+                        } catch (IOException | ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .map(obj -> (T) obj)
+                    .toList();
+
+        } catch (RuntimeException e) {
+
+            if (e.getCause() instanceof IOException io) {
+                throw io;
+            }
+
+            if (e.getCause() instanceof ClassNotFoundException cnf) {
+                throw cnf;
+            }
+
+            throw e;
+        }
     }
 
     // -------------------------------------------------------------------------

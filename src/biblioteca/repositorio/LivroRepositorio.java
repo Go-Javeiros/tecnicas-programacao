@@ -26,7 +26,7 @@ public class LivroRepositorio extends Repositorio<Livro> {
     }
 
     // -------------------------------------------------------------------------
-    // TODO Exercício 3a — Streams (Módulo 3)
+    // Exercício 3a — Streams (Módulo 3) [CONCLUÍDO]
     // -------------------------------------------------------------------------
 
     /**
@@ -42,12 +42,14 @@ public class LivroRepositorio extends Repositorio<Livro> {
      * @return lista ordenada por anoPublicacao descendente
      */
     public List<Livro> buscarPorGeneroCoordenado(String genero) {
-        // TODO Exercício 3a
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3a");
+        return buscarTodos().stream()
+                .filter(l -> l.getGenero().equalsIgnoreCase(genero))
+                .sorted(Comparator.comparingInt(Livro::getAnoPublicacao).reversed())
+                .collect(Collectors.toList());
     }
 
     // -------------------------------------------------------------------------
-    // TODO Exercício 3b — Streams (Módulo 3)
+    // Exercício 3b — Streams (Módulo 3) [CONCLUÍDO]
     // -------------------------------------------------------------------------
 
     /**
@@ -60,7 +62,7 @@ public class LivroRepositorio extends Repositorio<Livro> {
      * @return Map onde a chave é o gênero e o valor é a lista de livros daquele gênero
      */
     public Map<String, List<Livro>> agruparPorGenero() {
-        // TODO Exercício 3b
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3b");
+        return buscarTodos().stream()
+                .collect(Collectors.groupingBy(Livro::getGenero));
     }
 }

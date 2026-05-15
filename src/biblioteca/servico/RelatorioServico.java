@@ -5,7 +5,6 @@ import biblioteca.modelo.Livro;
 import biblioteca.repositorio.AutorRepositorio;
 import biblioteca.repositorio.EmprestimoRepositorio;
 import biblioteca.repositorio.LivroRepositorio;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -50,8 +49,18 @@ public class RelatorioServico {
      * @return lista de até 5 livros, do mais para o menos emprestado
      */
     public List<Livro> top5LivrosMaisEmprestados() {
-        // TODO Exercício 3c
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3c");
+        return emprestimoRepo.buscarTodos().stream()
+                .collect(Collectors.groupingBy(
+                        Emprestimo::getLivroId,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> livroRepo.buscarPorId(entry.getKey()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     // -------------------------------------------------------------------------
@@ -74,8 +83,13 @@ public class RelatorioServico {
      * @return Map<Long, BigDecimal> de usuarioId → soma das multas pendentes
      */
     public Map<Long, BigDecimal> multasPendentesPorUsuario() {
-        // TODO Exercício 3d
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3d");
+        return emprestimoRepo.buscarTodos().stream()
+                .filter(e -> !e.isDevolvido() && e.estaAtrasado())
+                .collect(Collectors.toMap(
+                        Emprestimo::getUsuarioId,
+                        Emprestimo::calcularMulta,
+                        BigDecimal::add
+                ));
     }
 
     // -------------------------------------------------------------------------
@@ -111,8 +125,27 @@ public class RelatorioServico {
      *   6. Retorne new RelatorioCompleto(top5, multas, generos)
      */
     public RelatorioCompleto gerarRelatorioCompleto() {
-        // TODO Exercício 7 ⭐ BÔNUS
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 7 (bônus)");
+        
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        CompletableFuture<List<Livro>> futureTop5 =
+                CompletableFuture.supplyAsync(() -> top5LivrosMaisEmprestados(), executor);
+
+        CompletableFuture<Map<Long, BigDecimal>> futureMultas =
+                CompletableFuture.supplyAsync(() -> multasPendentesPorUsuario(), executor);
+
+        CompletableFuture<Map<String, List<Livro>>> futureGeneros =
+                CompletableFuture.supplyAsync(() -> livroRepo.agruparPorGenero(), executor);
+
+        CompletableFuture.allOf(futureTop5, futureMultas, futureGeneros).join();
+
+        List<Livro> top5 = futureTop5.join();
+        Map<Long, BigDecimal> multas = futureMultas.join();
+        Map<String, List<Livro>> generos = futureGeneros.join();
+
+        executor.shutdown();
+
+        return new RelatorioCompleto(top5, multas, generos);
     }
 
     // -------------------------------------------------------------------------

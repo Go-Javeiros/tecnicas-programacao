@@ -1,5 +1,6 @@
 package biblioteca.servico;
 
+import biblioteca.modelo.Emprestimo;
 import biblioteca.modelo.Livro;
 import biblioteca.repositorio.AutorRepositorio;
 import biblioteca.repositorio.EmprestimoRepositorio;
@@ -7,9 +8,11 @@ import biblioteca.repositorio.LivroRepositorio;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class RelatorioServico {
 

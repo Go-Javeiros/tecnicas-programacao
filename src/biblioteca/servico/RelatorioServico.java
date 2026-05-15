@@ -1,5 +1,6 @@
 package biblioteca.servico;
 
+import biblioteca.modelo.Emprestimo;
 import biblioteca.modelo.Livro;
 import biblioteca.repositorio.AutorRepositorio;
 import biblioteca.repositorio.EmprestimoRepositorio;
@@ -7,9 +8,11 @@ import biblioteca.repositorio.LivroRepositorio;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 public class RelatorioServico {
 
@@ -46,8 +49,18 @@ public class RelatorioServico {
      * @return lista de até 5 livros, do mais para o menos emprestado
      */
     public List<Livro> top5LivrosMaisEmprestados() {
-        // TODO Exercício 3c
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3c");
+        return emprestimoRepo.buscarTodos().stream()
+                .collect(Collectors.groupingBy(
+                        Emprestimo::getLivroId,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .sorted(Map.Entry.<Long, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> livroRepo.buscarPorId(entry.getKey()))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     // -------------------------------------------------------------------------
@@ -70,8 +83,13 @@ public class RelatorioServico {
      * @return Map<Long, BigDecimal> de usuarioId → soma das multas pendentes
      */
     public Map<Long, BigDecimal> multasPendentesPorUsuario() {
-        // TODO Exercício 3d
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 3d");
+        return emprestimoRepo.buscarTodos().stream()
+                .filter(e -> !e.isDevolvido() && e.estaAtrasado())
+                .collect(Collectors.toMap(
+                        Emprestimo::getUsuarioId,
+                        Emprestimo::calcularMulta,
+                        BigDecimal::add
+                ));
     }
 
     // -------------------------------------------------------------------------

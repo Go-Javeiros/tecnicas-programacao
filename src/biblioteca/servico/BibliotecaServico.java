@@ -6,7 +6,6 @@ import biblioteca.modelo.Usuario;
 import biblioteca.repositorio.EmprestimoRepositorio;
 import biblioteca.repositorio.LivroRepositorio;
 import biblioteca.repositorio.UsuarioRepositorio;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -62,7 +61,26 @@ public class BibliotecaServico {
      */
     public Emprestimo registrarEmprestimo(Long usuarioId, Long livroId) {
         // TODO Exercício 6
-        throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 6");
+        Usuario usuario = usuarioRepo.buscarPorId(usuarioId)
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Usuário não encontrado: " + usuarioId));
+
+            Livro livro = livroRepo.buscarPorId(livroId)
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Livro não encontrado: " + livroId));
+
+            if (!validarLimiteEmprestimos(usuario.getId())) {
+                throw new IllegalStateException("Limite de empréstimos atingido para o usuário: " + usuarioId);
+            }
+
+            emprestimoRepo.buscarAbertos().stream()
+                    .filter(e -> e.getLivroId().equals(livro.getId()))
+                    .findFirst()
+                    .ifPresent(e -> {
+                        throw new IllegalStateException("Livro já está emprestado: " + livroId);
+                    });
+
+            return emprestimoRepo.salvar(new Emprestimo(usuarioId, livroId));
     }
 
     // -------------------------------------------------------------------------

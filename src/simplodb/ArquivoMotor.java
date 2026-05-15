@@ -3,6 +3,7 @@ package simplodb;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -161,16 +162,16 @@ public class ArquivoMotor {
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .map(obj -> (T) obj)
-                    .toList();
+                    .collect(Collectors.toList());
 
         } catch (RuntimeException e) {
 
-            if (e.getCause() instanceof IOException io) {
-                throw io;
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
             }
 
-            if (e.getCause() instanceof ClassNotFoundException cnf) {
-                throw cnf;
+            if (e.getCause() instanceof ClassNotFoundException) {
+                throw (ClassNotFoundException) e.getCause();
             }
 
             throw e;

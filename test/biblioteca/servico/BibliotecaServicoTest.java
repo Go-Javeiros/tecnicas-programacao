@@ -199,12 +199,19 @@ public class BibliotecaServicoTest {
         void executar() throws Exception;
     }
 
-    private record Contexto(
-            LivroRepositorio livroRepo,
-            UsuarioRepositorio usuarioRepo,
-            EmprestimoRepositorio emprestimoRepo,
-            BibliotecaServico servico
-    ) {
+    private static class Contexto {
+        private final LivroRepositorio livroRepo;
+        private final UsuarioRepositorio usuarioRepo;
+        private final EmprestimoRepositorio emprestimoRepo;
+        private final BibliotecaServico servico;
+
+        private Contexto(LivroRepositorio livroRepo, UsuarioRepositorio usuarioRepo, EmprestimoRepositorio emprestimoRepo, BibliotecaServico servico) {
+            this.livroRepo = livroRepo;
+            this.usuarioRepo = usuarioRepo;
+            this.emprestimoRepo = emprestimoRepo;
+            this.servico = servico;
+        }
+
         private Usuario salvarUsuario(String nome) {
             String normalizado = nome.toLowerCase();
             return usuarioRepo.salvar(new Usuario(

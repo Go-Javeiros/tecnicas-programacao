@@ -71,22 +71,22 @@ public List<Livro> top5LivrosMaisEmprestados() {
 
 /**
  * Retorna o total de multas pendentes agrupado por usuário.
- * Considera apenas empréstimos atrasados.
+ * Considera apenas empréstimos abertos que estão atrasados.
  *
  * Passos:
  *   1. emprestimoRepo.buscarTodos().stream()
- *   2. .filter(Emprestimo::estaAtrasado)
+ *   2. .filter(e -> !e.isDevolvido() && e.estaAtrasado())
  *   3. .collect(Collectors.toMap(
  *          Emprestimo::getUsuarioId,
  *          Emprestimo::calcularMulta,
  *          BigDecimal::add
  *      ))
  *
- * @return Map<Long, BigDecimal> de usuarioId → soma das multas
+ * @return Map<Long, BigDecimal> de usuarioId → soma das multas pendentes
  */
 public Map<Long, BigDecimal> multasPendentesPorUsuario() {
     return emprestimoRepo.buscarTodos().stream()
-            .filter(Emprestimo::estaAtrasado)
+            .filter(e -> !e.isDevolvido() && e.estaAtrasado())
             .collect(Collectors.toMap(
                     Emprestimo::getUsuarioId,
                     Emprestimo::calcularMulta,
@@ -133,12 +133,34 @@ public Map<Long, BigDecimal> multasPendentesPorUsuario() {
     }
 
     // -------------------------------------------------------------------------
-    // Record de resultado — fornecido
+    // Classe de resultado — fornecida
     // -------------------------------------------------------------------------
 
-    public record RelatorioCompleto(
-            List<Livro> top5MaisEmprestados,
-            Map<Long, BigDecimal> multasPendentes,
-            Map<String, List<Livro>> livrosPorGenero
-    ) {}
+    public static class RelatorioCompleto {
+        private final List<Livro> top5MaisEmprestados;
+        private final Map<Long, BigDecimal> multasPendentes;
+        private final Map<String, List<Livro>> livrosPorGenero;
+
+        public RelatorioCompleto(
+                List<Livro> top5MaisEmprestados,
+                Map<Long, BigDecimal> multasPendentes,
+                Map<String, List<Livro>> livrosPorGenero
+        ) {
+            this.top5MaisEmprestados = top5MaisEmprestados;
+            this.multasPendentes = multasPendentes;
+            this.livrosPorGenero = livrosPorGenero;
+        }
+
+        public List<Livro> top5MaisEmprestados() {
+            return top5MaisEmprestados;
+        }
+
+        public Map<Long, BigDecimal> multasPendentes() {
+            return multasPendentes;
+        }
+
+        public Map<String, List<Livro>> livrosPorGenero() {
+            return livrosPorGenero;
+        }
+    }
 }

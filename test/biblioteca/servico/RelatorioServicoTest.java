@@ -131,11 +131,17 @@ public class RelatorioServicoTest {
         return new Contexto(livroRepo, emprestimoRepo, servico);
     }
 
-    private record Contexto(
-            LivroRepositorio livroRepo,
-            EmprestimoRepositorio emprestimoRepo,
-            RelatorioServico servico
-    ) {
+    private static class Contexto {
+        private final LivroRepositorio livroRepo;
+        private final EmprestimoRepositorio emprestimoRepo;
+        private final RelatorioServico servico;
+
+        private Contexto(LivroRepositorio livroRepo, EmprestimoRepositorio emprestimoRepo, RelatorioServico servico) {
+            this.livroRepo = livroRepo;
+            this.emprestimoRepo = emprestimoRepo;
+            this.servico = servico;
+        }
+
         private Livro salvarLivro(String isbn, String titulo, String genero) {
             return livroRepo.salvar(new Livro(isbn, titulo, genero, 2026, 1L));
         }

@@ -12,6 +12,7 @@ import simplodb.ArquivoMotor;
 
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 /**
  * Ponto de entrada da Biblioteca Digital.
@@ -83,7 +84,7 @@ public class Main {
 
         System.out.println("\n=== Livros agrupados por gênero ===");
         livroRepo.agruparPorGenero().forEach((genero, livros) ->
-                System.out.println(genero + ": " + livros.stream().map(Livro::getTitulo).toList()));
+                System.out.println(genero + ": " + livros.stream().map(Livro::getTitulo).collect(Collectors.toList())));
 
         // ---- Devolução ----
         System.out.println("\n=== Devolvendo empréstimo #" + e1.getId() + " ===");
@@ -95,7 +96,7 @@ public class Main {
         try {
             RelatorioServico.RelatorioCompleto rel = relatorio.gerarRelatorioCompleto();
             System.out.println("Top 5 mais emprestados: " +
-                    rel.top5MaisEmprestados().stream().map(Livro::getTitulo).toList());
+                    rel.top5MaisEmprestados().stream().map(Livro::getTitulo).collect(Collectors.toList()));
             System.out.println("Multas pendentes por usuário: " + rel.multasPendentes());
             System.out.println("Gêneros disponíveis: " + rel.livrosPorGenero().keySet());
         } catch (UnsupportedOperationException e) {

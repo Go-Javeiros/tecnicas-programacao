@@ -62,8 +62,8 @@ public class Emprestimo implements Persistivel {
      * Retorna true se o empréstimo está atrasado.
      *
      * Um empréstimo está atrasado quando:
-     *   - ainda não foi devolvido (dataDevolvido == null), E
-     *   - o instante atual é posterior à dataDevolucaoPrevista
+     *   - Se não devolvido: o instante atual é posterior à dataDevolucaoPrevista
+     *   - Se devolvido: a data de devolução é posterior à dataDevolucaoPrevista
      *
      * Dica: use LocalDateTime.now() e o método isAfter()
      */
@@ -71,10 +71,11 @@ public class Emprestimo implements Persistivel {
         // TODO Exercício 1a
 
         try{
-            boolean dataAtrasado = isDevolvido()
-                    ? dataDevolvido.isAfter(dataDevolucaoPrevista)
-                    : LocalDateTime.now().isAfter(dataDevolucaoPrevista);
-            return dataAtrasado;
+            if (isDevolvido()) {
+                return dataDevolvido.isAfter(dataDevolucaoPrevista);
+            } else {
+                return LocalDateTime.now().isAfter(dataDevolucaoPrevista);
+            }
         }catch (UnsupportedOperationException e) {
             throw new UnsupportedOperationException("Não implementado — veja TODO Exercício 1a" + e);
         }
